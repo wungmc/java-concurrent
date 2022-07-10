@@ -34,16 +34,26 @@ public class SemaphoreDemo {
 		@Override
 		public void run() {
 			try {
-				// 先获取许可
+				// 先获取一个许可，因为该方法可响应中断，所以要在 try catch 内
 				semaphore.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				Thread.currentThread().interrupt();
+				return;
+			}
+
+			try {
+				// 获取成功后，执行逻辑
 				System.out.println(Thread.currentThread().getName() + " 获取许可");
 				// 获取成功后才可以运行
 				Thread.sleep(2000);
 				// 运行结束，释放许可
-				semaphore.release();
 				System.out.println(Thread.currentThread().getName() + " 释放许可");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				Thread.currentThread().interrupt();
+			} finally {
+				semaphore.release();
 			}
 		}
 	}
