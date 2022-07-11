@@ -8,6 +8,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * 模拟读多写少的场景下，分别使用 ReentrantLock 和 ReentrantReadWriteLock 实现，比较下耗时情况。
  *
+ * 使用可重入锁时，运行完大约需要 20 秒，因为读写线程全部是串行的；
+ * 切换到读写锁后，运行大约只需要 2～3 秒，此时所有读线程都是并行的。
+ *
  * @author wangmc
  * @date 2022-07-10
  */

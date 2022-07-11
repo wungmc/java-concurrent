@@ -5,6 +5,8 @@ package com.wung.concurrent.util;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * CountDownLatch 叫倒计数，允许一个或多个线程等待某些操作完成。
@@ -47,6 +49,7 @@ public class CountDownLatchDemo {
 				System.out.println(Thread.currentThread().getName() + " 跑完。耗时: " + time + " 秒");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			} finally {
 				// 跑完后，计数器减1
 				countDownLatch.countDown();
@@ -57,16 +60,27 @@ public class CountDownLatchDemo {
 	public void begin() {
 		System.out.println("赛跑开始...");
 		Random random = new Random(System.currentTimeMillis());
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
 		for (int i = 0; i < 4; i++) {
 			int time = random.nextInt(3) + 1;
-			new Thread(new Runner(time)).start();
+			executorService.submit(new Runner(time));
 		}
+
 		try {
 			// 等待计数器减为0，即所有线程都运行完
 			countDownLatch.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 		System.out.println("所有运动员都跑完了，开始统计成绩...");
 	}
 }
+
+// out
+//赛跑开始...
+//pool-1-thread-4 跑完。耗时: 2 秒
+//pool-1-thread-3 跑完。耗时: 3 秒
+//pool-1-thread-1 跑完。耗时: 3 秒
+//pool-1-thread-2 跑完。耗时: 3 秒
+//所有运动员都跑完了，开始统计成绩...
