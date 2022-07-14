@@ -4,6 +4,7 @@
 package com.wung.concurrent.util;
 
 import java.util.Random;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 /**
@@ -18,6 +19,7 @@ import java.util.concurrent.CyclicBarrier;
  * CyclicBarrier.await() 带有返回值，用来表示当前线程是第几个到达这个 Barrier 的线程。
  *
  * 应用场景：模拟并发，我需要启动 100 个线程去同时访问某一个地址，我希望它们能同时并发，而不是一个一个的去执行。
+ * 再比如，10个人一桌吃饭，先到的人要等待其他人，直到10个人到齐后才开饭。
  *
  * @author wung 2020-03-12.
  */
@@ -57,7 +59,12 @@ public class CyclicBarrierDemo {
 				// 线程进入阻塞，当计数器减为0时，开始运行
 				System.out.println(Thread.currentThread().getName() + "进入阻塞");
 				cyclicBarrier.await();
-			} catch (Exception e) {
+			} catch (InterruptedException e) {
+				// await 可响应中断
+				e.printStackTrace();
+				Thread.currentThread().interrupt();
+			} catch (BrokenBarrierException e) {
+				// 抛出该异常时，说明 CyclicBarrier 的条件被破坏，已经无法等待所有线程都到齐了（比如有线程被中断了）
 				e.printStackTrace();
 			}
 			System.out.println(Thread.currentThread().getName() + "开始运行");
