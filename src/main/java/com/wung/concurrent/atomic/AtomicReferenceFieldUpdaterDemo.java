@@ -20,31 +20,34 @@ public class AtomicReferenceFieldUpdaterDemo {
 
     public static void main(String[] args) {
         // 创建一个 User 类的 String 类型的 name 属性的修改器
-        AtomicReferenceFieldUpdater<User, String> nameFieldUpdater = AtomicReferenceFieldUpdater.newUpdater(User.class, String.class, "name");
+        AtomicReferenceFieldUpdater<User, User> nameFieldUpdater = AtomicReferenceFieldUpdater.newUpdater(User.class, User.class, "parent");
 
-        User user = new User("张三", 18);
-        // 如果 user 对象的 name 属性是 "张三"，就将其修改为 "李四"
-        nameFieldUpdater.compareAndSet(user, "张三", "李四");
-        System.out.println(user.getName());
+        User parent = new User(null, 58);
+        User parent2 = new User(null, 68);
+        User user = new User(parent, 18);
+        // 如果 user 对象的 parent 属性是 parent，就将其修改为 parent2
+        nameFieldUpdater.compareAndSet(user, parent, parent2);
+        System.out.println(user.getParent().getAge());
     }
 
     static class User {
+        // 引用类型的属性
         // 该属性对 Updater 是不可见的，所以这里不能使用 private，
         // 必须使用 volatile 修饰
-        volatile String name;
-        volatile int age;
+        volatile User parent;
+        private int age;
 
-        public User(String name, int age) {
-            this.name = name;
+        public User(User parent, int age) {
+            this.parent = parent;
             this.age = age;
         }
 
-        public String getName() {
-            return name;
+        public User getParent() {
+            return parent;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setParent(User parent) {
+            this.parent = parent;
         }
 
         public int getAge() {
@@ -58,4 +61,4 @@ public class AtomicReferenceFieldUpdaterDemo {
 }
 
 // out
-// 李四
+// 68
