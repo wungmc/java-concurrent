@@ -23,7 +23,7 @@ public class ReentrantLockCondition implements Runnable {
         // 该线程运行后，先获得可重入锁
         lock.lock();
         try {
-            // 让该线程等待在 condition 对象上，且释放lock！直到有其他线程调用了 signal/signalAll 或者发生了中断
+            // 让该线程等待在 condition 对象上（会释放lock）！直到有其他线程调用了 signal/signalAll 或者发生了中断
             condition.await();
             // 等待结束后，去获得锁，然后继续运行
             System.out.println("do something");
